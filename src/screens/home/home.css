@@ -1,8 +1,7 @@
 .movie-poster {
     height: 100%;
-
+     
 }
-
 .flex-container {
     display: flex;
 }
@@ -32,5 +31,4 @@
     .released-movie-grid-item {
         margin: 8px;
     }
-} 
-div > a{}
+}

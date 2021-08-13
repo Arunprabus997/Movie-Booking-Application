@@ -1,35 +1,26 @@
-import React from "react";
-
+import React, { Component } from "react";
+import ReactDOM from "react-dom";
 import "./home.css";
-
-import Header from "../../common/header/Header.js";
-
-//Material UI implementation
-import moviesData from "../../common/moviesData.js";
+import Details from "../details/Details";
+import Header from "../../common/header/Header";
+import { withStyles } from "@material-ui/core/styles";
+import moviesData from "../../common/moviesData";
 import GridList from "@material-ui/core/GridList";
 import GridListTile from "@material-ui/core/GridListTile";
 import GridListTileBar from "@material-ui/core/GridListTileBar";
-import { withStyles } from "@material-ui/core/styles";
-//end of Material UI implementation
-
-//Adding material UI form filtering movie
+import genres from "../../common/genre";
+import artists from "../../common/artists";
 import Card from "@material-ui/core/Card";
 import CardContent from "@material-ui/core/CardContent";
 import FormControl from "@material-ui/core/FormControl";
 import Typography from "@material-ui/core/Typography";
 import InputLabel from "@material-ui/core/InputLabel";
 import Input from "@material-ui/core/Input";
-
-import genres from "../../common/genre";
 import Select from "@material-ui/core/Select";
 import MenuItem from "@material-ui/core/MenuItem";
 import Checkbox from "@material-ui/core/Checkbox";
 import ListItemText from "@material-ui/core/ListItemText";
-
-import artists from "../../common/artists";
-
 import TextField from "@material-ui/core/TextField";
-
 import Button from "@material-ui/core/Button";
 
 const styles = (theme) => ({
@@ -39,7 +30,7 @@ const styles = (theme) => ({
   },
   upcomingMoviesHeading: {
     textAlign: "center",
-    background: "#ff9999",
+    background: "#FF9999",
     padding: "8px",
     fontSize: "1rem",
   },
@@ -54,37 +45,52 @@ const styles = (theme) => ({
   },
   formControl: {
     margin: theme.spacing.unit,
-    minWidth: "240px",
-    maxWidth: "240px",
+    minWidth: 240,
+    maxWidth: 240,
   },
   title: {
     color: theme.palette.primary.light,
   },
 });
-
-class Home extends React.Component {
-  constructor() {
-    super();
-    this.state = {
-      movieName: [],
+class Home extends Component {
+    state = {
+      movieName: "",
       genres: [],
       artists: [],
+      filteredMovie: moviesData
+    
     };
-  }
 
   movieNameChangeHandler = (event) => {
     this.setState({ movieName: event.target.value });
+    console.log(event.target.value);
   };
 
   genreSelectHandler = (event) => {
+    console.log(event.target.value);
     this.setState({ genres: event.target.value });
   };
 
   artistSelectHandler = (event) => {
     this.setState({ artists: event.target.value });
+    console.log(event.target.value);
   };
+  movieClickHandler = (movieId) => {
+    ReactDOM.render(
+      <Details movieId={movieId} />,
+      document.getElementById("root")
+    );
+  };
+  handleApply=()=>{
+    var filteredMovie1=moviesData.filter((movie)=>{   console.log(movie.artists.first_name+" "+movie.artists);
+    return (movie.title===this.state.movieName)||(this.state.artists.includes((movie.artists[0].first_name+" "+movie.artists[0].last_name )))||
+    (this.state.artists.includes(movie.artists[1].first_name+" "+movie.artists[1].last_name ))
+  });
+  this.setState({filteredMovie:filteredMovie1})
+  }
   render() {
     const { classes } = this.props;
+
     return (
       <div>
         <Header />
@@ -110,9 +116,10 @@ class Home extends React.Component {
               cellHeight={350}
               cols={4}
               className={classes.gridListMain}
-            >
-              {moviesData.map((movie) => (
+            > 
+              {this.state.filteredMovie.map((movie) => (
                 <GridListTile
+                  onClick={() => this.movieClickHandler(movie.id)}
                   className="released-movie-grid-item"
                   key={"grid" + movie.id}
                 >
@@ -155,7 +162,7 @@ class Home extends React.Component {
                   </InputLabel>
                   <Select
                     multiple
-                    input={<Input id="select-multiple-checkbox" />}
+                    input={<Input id="select-multiple-checkbox-genre" />}
                     renderValue={(selected) => selected.join(",")}
                     value={this.state.genres}
                     onChange={this.genreSelectHandler}
@@ -223,7 +230,7 @@ class Home extends React.Component {
                 <br />
                 <br />
                 <FormControl className={classes.formControl}>
-                  <Button variant="contained" color="primary">
+                  <Button variant="contained" color="primary" onClick={this.handleApply}>
                     APPLY
                   </Button>
                 </FormControl>
